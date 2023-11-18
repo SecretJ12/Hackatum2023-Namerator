@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.template
+package com.github.secretj12.hackatum2023namerator
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls
