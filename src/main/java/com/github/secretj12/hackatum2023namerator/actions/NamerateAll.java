@@ -66,6 +66,8 @@ public class NamerateAll extends AnAction {
                         return;
                     }
 
+                    if (!sug.matches("^[a-zA-Z0-9]+$"))
+                        return;
                     RenameProcessor rP = new RenameProcessor(project, namedElement, sug, true, false);
                     rP.run();
                 }
