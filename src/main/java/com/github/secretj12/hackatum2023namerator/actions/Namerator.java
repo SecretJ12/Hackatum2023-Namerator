@@ -8,16 +8,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtilBase;
 import com.intellij.refactoring.rename.RenameProcessor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,7 +26,7 @@ public class Namerator extends AnAction {
         boolean isTextSelected = editor != null && editor.getSelectionModel().hasSelection();
 
         // Set the visibility of the action
-        event.getPresentation().setEnabledAndVisible(isTextSelected);
+        event.getPresentation().setEnabledAndVisible(!isTextSelected);
     }
 
     @Override
@@ -39,28 +35,25 @@ public class Namerator extends AnAction {
         Project project = event.getData(CommonDataKeys.PROJECT);
 
         if (editor != null && project != null) {
-            String sel = editor.getSelectionModel().getSelectedText();
-            int vLine = editor.getSelectionModel().getSelectionEnd();
+            final int offset = editor.getCaretModel().getOffset();
+            final int line = editor.getCaretModel().getPrimaryCaret().getLogicalPosition().line;
 
+            PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
+            assert psiFile != null;
+            PsiElement psiElement = psiFile.findElementAt(offset);
+            assert (psiElement != null);
+            psiElement = psiElement.getParent();
+            assert (psiElement != null);
+
+            System.out.println(psiElement.getText());
 
             String[] lines = editor.getDocument().getText().split("\n");
             String numberedText = IntStream.range(0, lines.length)
                     .mapToObj(i -> (i + 1) + ": " + lines[i])
                     .collect(Collectors.joining("\n"));
-            String question = vLine + " \"" + sel + "\"\n\n" + numberedText;
+            String question = line + " \"" + psiElement.getText() + "\"\n\n" + numberedText;
             try {
                 String generatedName = generateNames(question)[0];
-
-                final int offset = editor.getCaretModel().getOffset();
-
-                PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
-                assert psiFile != null;
-                PsiElement psiElement = psiFile.findElementAt(offset);
-                assert(psiElement != null);
-                System.out.println(psiElement.getClass());
-                psiElement = psiElement.getParent();
-                System.out.println(psiElement.getClass());
-                assert(psiElement != null);
 
                 RenameProcessor rP = new RenameProcessor(project, psiElement, generatedName, true, false);
                 rP.run();
