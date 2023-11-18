@@ -8,10 +8,6 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.secretj12.hackatum2023namerator.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-    </extensions>
-
     <applicationListeners>
         <listener class="com.github.secretj12.hackatum2023namerator.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
