@@ -51,6 +51,7 @@ public class NamerateAll extends AnAction {
                 suggestions = generateNames(numberedText);
             } catch (Exception e) {
                 System.err.println("ChatGPT request failed");
+                GPTRequester.setKey(null);
                 return;
             }
             System.out.println(suggestions);
