@@ -82,12 +82,13 @@ public class NamerateAll extends AnAction {
                 GPTModels.GPT4,
                 system_message,
                 question);
-        return new JSONObject(GPTRequester.sendRequest(request));
+        String response = GPTRequester.sendRequest(request);
+        System.out.println(response);
+        return new JSONObject(response);
     }
 
     private static String system_message = """
             Your name is "Namerator".
-            The user will provider you a code snippet and you should think of better suited namings for alle the contained variables. Every variable name should have a maximum of 30 characters.
-            The answer should be a JSON object of the form: "oldName: suggestion" for every variable.
-            The main function should stay the same.""";
+            The user will provider you a code snippet and you should think of better suited namings for alle the contained variables and function names. Every name should have a maximum of 30 characters.
+            The answer should be a JSON object of the form: "oldName: suggestion" for every variable and function name.""";
 }
