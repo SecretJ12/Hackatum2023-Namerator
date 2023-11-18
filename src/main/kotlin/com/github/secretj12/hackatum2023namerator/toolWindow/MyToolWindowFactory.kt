@@ -9,7 +9,9 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
 import com.github.secretj12.hackatum2023namerator.MyBundle
+import ChatGPT
 import com.github.secretj12.hackatum2023namerator.services.MyProjectService
+import com.intellij.ui.components.JBTextField
 import javax.swing.JButton
 
 
@@ -30,14 +32,24 @@ class MyToolWindowFactory : ToolWindowFactory {
     class MyToolWindow(toolWindow: ToolWindow) {
 
         private val service = toolWindow.project.service<MyProjectService>()
+        private val chatGPT = toolWindow.project.service<ChatGPT>()
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
+            val gptKey = JBTextField()
+            val button = JButton("Set GPT Key").apply {
+                addActionListener {
+                    chatGPT.setKey(gptKey.text)
+                }
+            }
             val label = JBLabel(MyBundle.message("randomLabel", "?"))
 
+            add(gptKey)
+            add(button)
             add(label)
             add(JButton(MyBundle.message("shuffle")).apply {
                 addActionListener {
-                    label.text = MyBundle.message("randomLabel", service.getRandomNumber())
+//                    label.text = MyBundle.message("randomLabel", service.getRandomNumber())
+                    label.text = MyBundle.message("randomLabel", chatGPT.getChatResponse("Hello World"));
                 }
             })
         }
