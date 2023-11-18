@@ -2,6 +2,7 @@ package com.github.secretj12.hackatum2023namerator.actions;
 
 import com.github.secretj12.hackatum2023namerator.GPTModels;
 import com.github.secretj12.hackatum2023namerator.GPTRequest;
+import com.github.secretj12.hackatum2023namerator.GPTRequester;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -40,11 +41,15 @@ public class Namerator extends AnAction {
                     .mapToObj(i -> (i + 1) + ": " + lines[i])
                     .collect(Collectors.joining("\n"));
             String question = vLine + " \"" + sel + "\"\n\n" + numberedText;
-            System.out.println(String.join("\n", generateNames(question)));
+            try {
+                System.out.println(String.join("\n", generateNames(question)));
+            } catch (Exception e) {
+                System.err.println("Request to ChatGPT failed");
+            }
         }
     }
 
-    private String[] generateNames(String question) {
+    private String[] generateNames(String question) throws Exception {
         GPTRequest request = new GPTRequest(
                 0, 100,
                 0.5,
@@ -53,7 +58,7 @@ public class Namerator extends AnAction {
                 GPTModels.GPT4,
                 system_message,
                 question);
-        return new String[]{};
+        return GPTRequester.sendRequest(request).split("\n");
     }
 
     private static String system_message = """

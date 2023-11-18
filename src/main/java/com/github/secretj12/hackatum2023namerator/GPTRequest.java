@@ -33,7 +33,16 @@ public class GPTRequest {
         data.put("model", model == GPTModels.GPT4 ? "gpt-4" : "gpt-3.5-turbo");
         data.put("messages", new JSONArray(List.of(system, user)));
 
-        return system;
+        return data;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return buildRequest().toString();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public GPTRequest(double temperature, int max_tokens, double top_p, double frequency_penalty, double presence_penalty, GPTModels model, String system_message, String user_message) {
