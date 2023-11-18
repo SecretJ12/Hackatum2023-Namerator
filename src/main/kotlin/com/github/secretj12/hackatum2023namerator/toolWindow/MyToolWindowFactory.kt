@@ -1,23 +1,26 @@
 package com.github.secretj12.hackatum2023namerator.toolWindow
 
+import ChatGPT
+import SampleDialogWrapper
+import com.github.secretj12.hackatum2023namerator.GPTRequester
+import com.github.secretj12.hackatum2023namerator.MyBundle
+import com.github.secretj12.hackatum2023namerator.services.MyProjectService
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
-import com.intellij.ui.content.ContentFactory
-import com.github.secretj12.hackatum2023namerator.MyBundle
-import ChatGPT
-import com.github.secretj12.hackatum2023namerator.services.MyProjectService
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.content.ContentFactory
 import javax.swing.JButton
+
 
 class MyToolWindowFactory : ToolWindowFactory {
 
     init {
-        thisLogger().warn("Don't forget to remove all non-needed sample code files with their corresponding registration entries in `plugin.xml`.")
     }
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -37,7 +40,7 @@ class MyToolWindowFactory : ToolWindowFactory {
             val gptKey = JBTextField()
             val button = JButton("Set GPT Key").apply {
                 addActionListener {
-                    chatGPT.setKey(gptKey.text)
+                    GPTRequester.setKey(gptKey.text)
                 }
             }
             val label = JBLabel(MyBundle.message("randomLabel", "?"))
@@ -47,10 +50,18 @@ class MyToolWindowFactory : ToolWindowFactory {
             add(label)
             add(JButton(MyBundle.message("shuffle")).apply {
                 addActionListener {
+
 //                    label.text = MyBundle.message("randomLabel", service.getRandomNumber())
+                    if (GPTRequester.getKey() == null) {
+                        // user pressed OK
+                        val exitCode =  SampleDialogWrapper().showAndGet()
+                    }
+                    else {
                     label.text = MyBundle.message("randomLabel", chatGPT.getChatResponse("Hello World"));
-                }
-            })
+                    }
+            }})
         }
     }
+
+
 }

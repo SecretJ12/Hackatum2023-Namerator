@@ -36,4 +36,8 @@ public class GPTRequester {
 
         return new JSONObject(output).getJSONArray("choices").getJSONObject(0).getString("text");
     }
+
+    public static String getKey() {
+        return key;
+    }
 }
