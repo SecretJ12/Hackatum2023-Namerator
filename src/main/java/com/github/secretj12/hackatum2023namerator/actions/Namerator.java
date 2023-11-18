@@ -24,10 +24,13 @@ public class Namerator extends AnAction {
     public void update(@NotNull AnActionEvent event) {
         // Enable the action only if text is selected
         Editor editor = event.getData(CommonDataKeys.EDITOR);
+        Project project = event.getData(CommonDataKeys.PROJECT);
         boolean isTextSelected = editor != null && editor.getSelectionModel().hasSelection();
+        assert editor != null;
+        PsiElement psiElement = findElement(editor, project);
 
         // Set the visibility of the action
-        event.getPresentation().setEnabledAndVisible(!isTextSelected);
+        event.getPresentation().setEnabledAndVisible(!isTextSelected && psiElement != null);
     }
 
     @Override
@@ -36,26 +39,11 @@ public class Namerator extends AnAction {
         Project project = event.getData(CommonDataKeys.PROJECT);
 
         if (editor != null && project != null) {
-            final int offset = editor.getCaretModel().getOffset();
             final int line = editor.getCaretModel().getPrimaryCaret().getLogicalPosition().line;
 
-            PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
-
-            assert psiFile != null;
-            PsiElement psiElement = psiFile.findElementAt(offset);
-            assert (psiElement != null);
-            psiElement = psiElement.getParent();
-            assert (psiElement != null);
-            if (!(psiElement instanceof PsiNamedElement)) {
-                psiElement = psiFile.findElementAt(offset-1);
-                assert (psiElement != null);
-                psiElement = psiElement.getParent();
-                assert (psiElement != null);
-                if (!(psiElement instanceof PsiNamedElement)) {
-                    System.out.println("Not renewable");
-                    return;
-                }
-            }
+            PsiElement psiElement = findElement(editor, project);
+            if (psiElement == null)
+                return;
 
             String[] lines = editor.getDocument().getText().split("\n");
             String numberedText = IntStream.range(0, lines.length)
@@ -71,6 +59,31 @@ public class Namerator extends AnAction {
                 System.err.println("Request to ChatGPT failed");
             }
         }
+    }
+
+    private PsiElement findElement(Editor editor, Project project) {
+        if (editor == null || project == null)
+            return null;
+
+        final int offset = editor.getCaretModel().getOffset();
+        PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
+
+        assert psiFile != null;
+        PsiElement psiElement = psiFile.findElementAt(offset);
+        assert (psiElement != null);
+        psiElement = psiElement.getParent();
+        assert (psiElement != null);
+        if ((psiElement instanceof PsiNamedElement))
+            return psiElement;
+
+        psiElement = psiFile.findElementAt(offset - 1);
+        assert (psiElement != null);
+        psiElement = psiElement.getParent();
+        assert (psiElement != null);
+        if ((psiElement instanceof PsiNamedElement))
+            return psiElement;
+
+        return null;
     }
 
     private String[] generateNames(String question) throws Exception {
