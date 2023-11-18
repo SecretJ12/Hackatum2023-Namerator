@@ -13,7 +13,7 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 
 
-class SampleDialogWrapper : DialogWrapper(true) {
+class Dialog : DialogWrapper(true) {
     val centerPanel: JPanel = JPanel(GridBagLayout())
     private val gpt: JTextField; ;
     init {
@@ -34,13 +34,6 @@ class SampleDialogWrapper : DialogWrapper(true) {
         centerPanel.add(JLabel("GPT Key"), gridbag.nextLine().next().weightx(0.2))
         centerPanel.add(gpt, gridbag.nextLine().next().weightx(0.8))
         return centerPanel
-//        val dialogPanel = JPanel(BorderLayout())
-//        val label = JLabel("Testing")
-//        label.preferredSize = Dimension(100, 100)
-////        val gptKey = JBTextField()
-//        dialogPanel.add(label, BorderLayout.CENTER)
-//        dialogPanel.add(gpt, BorderLayout.SOUTH)
-//        return dialogPanel
     }
 
     fun getText(text: String ): JComponent {

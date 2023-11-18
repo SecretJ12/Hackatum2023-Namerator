@@ -1,14 +1,11 @@
 package com.github.secretj12.hackatum2023namerator.toolWindow
 
 import ChatGPT
-import SampleDialogWrapper
+import Dialog
 import com.github.secretj12.hackatum2023namerator.GPTRequester
 import com.github.secretj12.hackatum2023namerator.MyBundle
-import com.github.secretj12.hackatum2023namerator.services.MyProjectService
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
@@ -33,7 +30,6 @@ class MyToolWindowFactory : ToolWindowFactory {
 
     class MyToolWindow(toolWindow: ToolWindow) {
 
-        private val service = toolWindow.project.service<MyProjectService>()
         private val chatGPT = toolWindow.project.service<ChatGPT>()
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
@@ -43,7 +39,7 @@ class MyToolWindowFactory : ToolWindowFactory {
                     GPTRequester.setKey(gptKey.text)
                 }
             }
-            val label = JBLabel(MyBundle.message("randomLabel", "?"))
+            val label = JBLabel(MyBundle.message("newVariableNames", "?"))
 
             add(gptKey)
             add(button)
@@ -51,13 +47,12 @@ class MyToolWindowFactory : ToolWindowFactory {
             add(JButton(MyBundle.message("shuffle")).apply {
                 addActionListener {
 
-//                    label.text = MyBundle.message("randomLabel", service.getRandomNumber())
                     if (GPTRequester.getKey() == null) {
                         // user pressed OK
-                        val exitCode =  SampleDialogWrapper().showAndGet()
+                        Dialog().showAndGet()
                     }
                     else {
-                    label.text = MyBundle.message("randomLabel", chatGPT.getChatResponse("Hello World"));
+                    label.text = MyBundle.message("newVariableNames", chatGPT.getChatResponse("Hello World"));
                     }
             }})
         }
