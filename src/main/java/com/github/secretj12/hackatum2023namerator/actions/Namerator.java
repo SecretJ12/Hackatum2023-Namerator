@@ -8,12 +8,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiUtilBase;
 import com.intellij.refactoring.rename.RenameProcessor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -53,10 +57,10 @@ public class Namerator extends AnAction {
                     .collect(Collectors.joining("\n"));
             String question = line + " \"" + psiElement.getText() + "\"\n\n" + numberedText;
             try {
-                String generatedName = generateNames(question)[0];
-
-                RenameProcessor rP = new RenameProcessor(project, psiElement, generatedName, true, false);
-                rP.run();
+                String[] generatedNames = generateNames(question);
+                List<String> names = Arrays.stream(generatedNames).toList();
+                SuggestionPopup popup = new SuggestionPopup("Namerator", names, project, psiElement);
+                JBPopupFactory.getInstance().createListPopup(popup).showInBestPositionFor(editor);
             } catch (Exception e) {
                 System.err.println("Request to ChatGPT failed");
             }
@@ -78,6 +82,32 @@ public class Namerator extends AnAction {
     private static String system_message = """
             Your name is "Namerator".
             You first get a line number and the name of a variable. Afterward you get a code snipped the variable is used in. You should then generate some suggestions for proper variables names, which are kind of explanatory for the variable used.
-            The name should have a maximum of 30 characters, you have to provide 3 suggestions. Give every suggestions in a new line without any other descripion.
+            The name should have a maximum of 30 characters, you have to provide 5 suggestions. Give every suggestions in a new line without any other descripion.
             The main function should remain the main function""";
+
+    private class SuggestionPopup extends BaseListPopupStep<String> {
+
+        Project project;
+        PsiElement psiElement;
+
+        public SuggestionPopup(String name, List<String> suggestions, Project project, PsiElement psiElement) {
+            super(name, suggestions);
+            this.project = project;
+            this.psiElement = psiElement;
+        }
+        @Override
+        public @NotNull String getTextFor(String value) {
+            return value;
+        }
+
+        @Override
+        public SuggestionPopup onChosen(String selectedValue, boolean finalChoice) {
+            if (finalChoice) {
+                System.out.println("chose " + selectedValue);
+                RenameProcessor rP = new RenameProcessor(project, psiElement, selectedValue, true, false);
+                rP.run();
+            }
+            return null;
+        }
+    }
 }
