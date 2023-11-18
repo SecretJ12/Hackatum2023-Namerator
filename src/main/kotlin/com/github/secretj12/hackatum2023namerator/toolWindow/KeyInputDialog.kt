@@ -20,7 +20,7 @@ class KeyInputDialog : DialogWrapper(true) {
     val centerPanel: JPanel = JPanel(GridBagLayout())
     private val gpt: JTextField; ;
     init {
-        title = "Test DialogWrapper"
+        title = "OpenAI Key"
         gpt = JTextField()
         init()
     }
@@ -34,7 +34,7 @@ class KeyInputDialog : DialogWrapper(true) {
                 .setDefaultInsets(Insets(0, 0, AbstractLayout.DEFAULT_VGAP, AbstractLayout.DEFAULT_HGAP))
         centerPanel.preferredSize = Dimension(400, 100)
 
-        centerPanel.add(JLabel("GPT Key"), gridbag.nextLine().next().weightx(0.2))
+        centerPanel.add(JLabel("OpenAI Key (has to support GPT-4)"), gridbag.nextLine().next().weightx(0.2))
         centerPanel.add(gpt, gridbag.nextLine().next().weightx(0.8))
         return centerPanel
     }

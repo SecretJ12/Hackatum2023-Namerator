@@ -18,13 +18,13 @@
     <actions>
         <action id="namerator" class="com.github.secretj12.hackatum2023namerator.actions.Namerator" text="Namerator" description="Renames your shit">
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="$SearchWeb"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="control alt G" replace-all="true"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt G" remove="true"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift G" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift G" remove="true"/>
         </action>
         <action id="namerateall" class="com.github.secretj12.hackatum2023namerator.actions.NamerateAll" text="Namerate All" description="Renames your shit">
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="$SearchWeb"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="control shift G" replace-all="true"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift G" remove="true"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt G" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="control alt G" remove="true"/>
         </action>
     </actions>
 </idea-plugin>
