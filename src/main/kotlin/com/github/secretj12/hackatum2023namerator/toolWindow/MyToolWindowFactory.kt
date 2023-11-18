@@ -14,7 +14,6 @@ import com.github.secretj12.hackatum2023namerator.services.MyProjectService
 import com.intellij.ui.components.JBTextField
 import javax.swing.JButton
 
-
 class MyToolWindowFactory : ToolWindowFactory {
 
     init {
