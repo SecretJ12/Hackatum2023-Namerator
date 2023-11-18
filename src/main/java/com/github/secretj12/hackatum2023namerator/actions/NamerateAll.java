@@ -75,7 +75,8 @@ public class NamerateAll extends AnAction {
                         return;
                     }
 
-                    if (!sug.matches("^[a-zA-Z0-9]+$") | ( namedElement.getName().length() > maxNameLength  && maxNameLength >= 0))
+                    if (!sug.matches("^[a-zA-Z0-9]+$") | namedElement.getName() == null |( namedElement.getName().length() > maxNameLength  && maxNameLength >= 0))
+
                         return;
 
                     RenameProcessor rP = new RenameProcessor(project, namedElement, sug, true, false);
