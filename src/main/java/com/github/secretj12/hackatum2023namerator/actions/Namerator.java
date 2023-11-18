@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiUtilBase;
 import com.intellij.refactoring.rename.RenameProcessor;
 import org.jetbrains.annotations.NotNull;
@@ -74,18 +75,18 @@ public class Namerator extends AnAction {
 
         assert psiFile != null;
         PsiElement psiElement = psiFile.findElementAt(offset);
-        assert (psiElement != null);
         psiElement = psiElement.getParent();
-        assert (psiElement != null);
-        if ((psiElement instanceof PsiNamedElement))
+        if (psiElement instanceof PsiNamedElement)
             return psiElement;
+        if (psiElement instanceof PsiReference)
+            return ((PsiReference) psiElement).resolve();
 
         psiElement = psiFile.findElementAt(offset - 1);
-        assert (psiElement != null);
         psiElement = psiElement.getParent();
-        assert (psiElement != null);
         if ((psiElement instanceof PsiNamedElement))
             return psiElement;
+        if (psiElement instanceof PsiReference)
+            return ((PsiReference) psiElement).resolve();
 
         return null;
     }
@@ -118,6 +119,7 @@ public class Namerator extends AnAction {
             this.project = project;
             this.psiElement = psiElement;
         }
+
         @Override
         public @NotNull String getTextFor(String value) {
             return value;

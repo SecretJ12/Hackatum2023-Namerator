@@ -46,7 +46,7 @@ public class NamerateAll extends AnAction {
                 System.err.println("ChatGPT request failed");
                 return;
             }
-            System.out.println(suggestions.toString());
+            System.out.println(suggestions);
 
             psiFile.accept(new PsiRecursiveElementVisitor() {
                 @Override
