@@ -15,4 +15,9 @@
     <applicationListeners>
         <listener class="com.github.secretj12.hackatum2023namerator.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
+    <actions>
+        <action id="namerator" class="com.github.secretj12.hackatum2023namerator.actions.Namerator" text="Namerator">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="$SearchWeb"/>
+        </action>
+    </actions>
 </idea-plugin>
