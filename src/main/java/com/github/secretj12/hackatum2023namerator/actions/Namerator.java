@@ -8,6 +8,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.util.PsiUtilBase;
+import com.intellij.refactoring.rename.RenameProcessor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -42,7 +49,21 @@ public class Namerator extends AnAction {
                     .collect(Collectors.joining("\n"));
             String question = vLine + " \"" + sel + "\"\n\n" + numberedText;
             try {
-                System.out.println(String.join("\n", generateNames(question)));
+                String generatedName = generateNames(question)[0];
+
+                final int offset = editor.getCaretModel().getOffset();
+
+                PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
+                assert psiFile != null;
+                PsiElement psiElement = psiFile.findElementAt(offset);
+                assert(psiElement != null);
+                System.out.println(psiElement.getClass());
+                psiElement = psiElement.getParent();
+                System.out.println(psiElement.getClass());
+                assert(psiElement != null);
+
+                RenameProcessor rP = new RenameProcessor(project, psiElement, generatedName, true, false);
+                rP.run();
             } catch (Exception e) {
                 System.err.println("Request to ChatGPT failed");
             }
@@ -64,5 +85,6 @@ public class Namerator extends AnAction {
     private static String system_message = """
             Your name is "Namerator".
             You first get a line number and the name of a variable. Afterward you get a code snipped the variable is used in. You should then generate some suggestions for proper variables names, which are kind of explanatory for the variable used.
-            The name should have a maximum of 30 characters, you have to provide 3 suggestions. Give every suggestions in a new line without any other descripion.""";
+            The name should have a maximum of 30 characters, you have to provide 3 suggestions. Give every suggestions in a new line without any other descripion.
+            The main function should remain the main function""";
 }
