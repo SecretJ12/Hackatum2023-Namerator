@@ -1,25 +1,63 @@
 package com.github.secretj12.hackatum2023namerator.actions;
 
+import com.github.secretj12.hackatum2023namerator.GPTModels;
+import com.github.secretj12.hackatum2023namerator.GPTRequest;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Namerator extends AnAction {
 
     @Override
     public void update(@NotNull AnActionEvent event) {
-        // Using the event, evaluate the context,
-        // and enable or disable the action.
-        System.out.println("Test update");
+        // Enable the action only if text is selected
+        Editor editor = event.getData(CommonDataKeys.EDITOR);
+        boolean isTextSelected = editor != null && editor.getSelectionModel().hasSelection();
+
+        // Set the visibility of the action
+        event.getPresentation().setEnabledAndVisible(isTextSelected);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        // Using the event, implement an action.
-        // For example, create and show a dialog.
-        System.out.println("Test action");
+        Editor editor = event.getData(CommonDataKeys.EDITOR);
+        Project project = event.getData(CommonDataKeys.PROJECT);
+
+        if (editor != null && project != null) {
+            String sel = editor.getSelectionModel().getSelectedText();
+            int vLine = editor.getSelectionModel().getSelectionEnd();
+
+
+            String[] lines = editor.getDocument().getText().split("\n");
+            String numberedText = IntStream.range(0, lines.length)
+                    .mapToObj(i -> (i + 1) + ": " + lines[i])
+                    .collect(Collectors.joining("\n"));
+            String question = vLine + " \"" + sel + "\"\n\n" + numberedText;
+            System.out.println(String.join("\n", generateNames(question)));
+        }
     }
 
-    // Override getActionUpdateThread() when you target 2022.3 or later!
+    private String[] generateNames(String question) {
+        GPTRequest request = new GPTRequest(
+                0, 100,
+                0.5,
+                0,
+                0,
+                GPTModels.GPT4,
+                system_message,
+                question);
+        return new String[]{};
+    }
 
+    private static String system_message = """
+            Your name is "Namerator".
+            You first get a line number and the name of a variable. Afterward you get a code snipped the variable is used in. You should then generate some suggestions for proper variables names, which are kind of explanatory for the variable used.
+            The name should have a maximum of 30 characters, you have to provide 3 suggestions. Give every suggestions in a new line without any other descripion.""";
 }
