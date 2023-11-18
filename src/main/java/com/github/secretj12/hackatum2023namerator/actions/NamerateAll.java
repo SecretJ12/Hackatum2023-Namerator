@@ -3,6 +3,7 @@ package com.github.secretj12.hackatum2023namerator.actions;
 import com.github.secretj12.hackatum2023namerator.GPTModels;
 import com.github.secretj12.hackatum2023namerator.GPTRequest;
 import com.github.secretj12.hackatum2023namerator.GPTRequester;
+import com.github.secretj12.hackatum2023namerator.toolWindow.MaxNameLengthDialog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -27,6 +28,8 @@ public class NamerateAll extends AnAction {
         // Enable the action only if text is selected
     }
 
+    private static int maxNameLength = -1;
+
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         Editor editor = event.getData(CommonDataKeys.EDITOR);
@@ -34,6 +37,10 @@ public class NamerateAll extends AnAction {
         PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
 
         if (editor != null && project != null && psiFile != null) {
+//            if (maxNameLength == -1){
+                MaxNameLengthDialog maxNameLengthDialog = new MaxNameLengthDialog();
+                maxNameLengthDialog.show();
+//            }
 
             String[] lines = editor.getDocument().getText().split("\n");
             String numberedText = IntStream.range(0, lines.length)
@@ -44,6 +51,7 @@ public class NamerateAll extends AnAction {
                 suggestions = generateNames(numberedText);
             } catch (Exception e) {
                 System.err.println("ChatGPT request failed");
+                GPTRequester.setKey(null);
                 return;
             }
             System.out.println(suggestions);
@@ -62,12 +70,14 @@ public class NamerateAll extends AnAction {
                     String sug;
                     try {
                         sug = suggestions.getString(namedElement.getName());
+
                     } catch (JSONException e) {
                         return;
                     }
 
-                    if (!sug.matches("^[a-zA-Z0-9]+$"))
+                    if (!sug.matches("^[a-zA-Z0-9]+$") | ( namedElement.getName().length() > maxNameLength  && maxNameLength >= 0))
                         return;
+
                     RenameProcessor rP = new RenameProcessor(project, namedElement, sug, true, false);
                     rP.run();
                 }
@@ -89,6 +99,10 @@ public class NamerateAll extends AnAction {
         return new JSONObject(response);
     }
 
+
+    public static void setMaxNameLength(int maxNameLength) {
+        NamerateAll.maxNameLength = maxNameLength;
+    }
     private static String system_message = """
             Your name is "Namerator".
             The user will provider you a code snippet and you should think of better suited namings for alle the contained variables and function names. Every name should have a maximum of 30 characters.

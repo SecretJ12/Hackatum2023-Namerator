@@ -62,6 +62,7 @@ public class Namerator extends AnAction {
                 JBPopupFactory.getInstance().createListPopup(popup).showInBestPositionFor(editor);
             } catch (Exception e) {
                 System.err.println("Request to ChatGPT failed");
+                GPTRequester.setKey(null);
             }
         }
     }
