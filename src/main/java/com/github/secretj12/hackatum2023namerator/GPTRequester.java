@@ -20,21 +20,20 @@ public class GPTRequester {
             return "";
         }
 
-        String url = "https://api.openai.com/v1/completions";
+        String url = "https://api.openai.com/v1/chat/completions";
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
 
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Authorization", "Bearer " + key);
 
-        System.out.println(request.toString());
         con.setDoOutput(true);
         con.getOutputStream().write(request.toString().getBytes());
 
         String output = new BufferedReader(new InputStreamReader(con.getInputStream())).lines()
                 .reduce((a, b) -> a + b).get();
-
-        return new JSONObject(output).getJSONArray("choices").getJSONObject(0).getString("text");
+        return new JSONObject(output).getJSONArray("choices").getJSONObject(0)
+                .getJSONObject("message").getString("content");
     }
 
     public static String getKey() {
