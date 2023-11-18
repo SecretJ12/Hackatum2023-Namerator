@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiUtilBase;
 import com.intellij.refactoring.rename.RenameProcessor;
 import org.jetbrains.annotations.NotNull;
@@ -39,13 +40,22 @@ public class Namerator extends AnAction {
             final int line = editor.getCaretModel().getPrimaryCaret().getLogicalPosition().line;
 
             PsiFile psiFile = PsiUtilBase.getPsiFileInEditor(editor, project);
+
             assert psiFile != null;
             PsiElement psiElement = psiFile.findElementAt(offset);
             assert (psiElement != null);
             psiElement = psiElement.getParent();
             assert (psiElement != null);
-
-            System.out.println(psiElement.getText());
+            if (!(psiElement instanceof PsiNamedElement)) {
+                psiElement = psiFile.findElementAt(offset-1);
+                assert (psiElement != null);
+                psiElement = psiElement.getParent();
+                assert (psiElement != null);
+                if (!(psiElement instanceof PsiNamedElement)) {
+                    System.out.println("Not renewable");
+                    return;
+                }
+            }
 
             String[] lines = editor.getDocument().getText().split("\n");
             String numberedText = IntStream.range(0, lines.length)
