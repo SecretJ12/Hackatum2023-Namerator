@@ -1,4 +1,7 @@
+package com.github.secretj12.hackatum2023namerator.toolWindow
+
 import com.github.secretj12.hackatum2023namerator.GPTRequester
+
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBLabel
 import com.intellij.uiDesigner.core.AbstractLayout
@@ -13,7 +16,7 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 
 
-class Dialog : DialogWrapper(true) {
+class KeyInputDialog : DialogWrapper(true) {
     val centerPanel: JPanel = JPanel(GridBagLayout())
     private val gpt: JTextField; ;
     init {

@@ -1,5 +1,6 @@
 package com.github.secretj12.hackatum2023namerator;
 
+import com.github.secretj12.hackatum2023namerator.toolWindow.KeyInputDialog;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -16,8 +17,10 @@ public class GPTRequester {
 
     public static String sendRequest(GPTRequest request) throws Exception {
         if (key == null || key.isEmpty()) {
-            System.err.println("No key specified");
-            return "";
+            KeyInputDialog dialog = new KeyInputDialog();
+            dialog.showAndGet();
+//            System.err.println("No key specified");
+//            return "";
         }
 
         String url = "https://api.openai.com/v1/chat/completions";

@@ -1,7 +1,6 @@
 package com.github.secretj12.hackatum2023namerator.toolWindow
 
 import ChatGPT
-import Dialog
 import com.github.secretj12.hackatum2023namerator.GPTRequester
 import com.github.secretj12.hackatum2023namerator.MyBundle
 import com.intellij.openapi.components.service
@@ -33,23 +32,14 @@ class MyToolWindowFactory : ToolWindowFactory {
         private val chatGPT = toolWindow.project.service<ChatGPT>()
 
         fun getContent() = JBPanel<JBPanel<*>>().apply {
-            val gptKey = JBTextField()
-            val button = JButton("Set GPT Key").apply {
-                addActionListener {
-                    GPTRequester.setKey(gptKey.text)
-                }
-            }
             val label = JBLabel(MyBundle.message("newVariableNames", "?"))
-
-            add(gptKey)
-            add(button)
             add(label)
             add(JButton(MyBundle.message("shuffle")).apply {
                 addActionListener {
 
                     if (GPTRequester.getKey() == null) {
                         // user pressed OK
-                        Dialog().showAndGet()
+                        KeyInputDialog().showAndGet()
                     }
                     else {
                     label.text = MyBundle.message("newVariableNames", chatGPT.getChatResponse("Hello World"));
